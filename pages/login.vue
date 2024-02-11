@@ -4,6 +4,9 @@
         <v-card class="elevation-2">
           <v-toolbar class="align-center">Hello, Selamat Datang!👋🏻</v-toolbar>
           <v-card-text>
+            <v-alert color="red lighten 2" dark v-if="isError">
+              {{ message }}
+            </v-alert>
             <v-form @submit.prevent="onSubmit">
               <v-text-field 
                 name="id_user"
@@ -44,6 +47,8 @@ export default {
   layout: 'auth',
   data() {
     return {
+      message: null,
+      isError: false,
       isLoading: false,
       form: {
         nik_karyawan: '',
@@ -66,9 +71,12 @@ export default {
         this.isLoading = true
        const user= await this.$store.dispatch('auth/login', this.form);
        this.isLoading = false
-       alert(user.data.nama)
+       this.$router.push('/')
       } catch (error) {
+        this.iseError= true
+        this.isLoading = false
         console.log(error);
+        this.message = error.response ? error.response.data.message : "SERVER ERROR"
       };
     }
   }

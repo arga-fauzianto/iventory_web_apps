@@ -1,11 +1,11 @@
 <template>
-    <v-container fluid class="elevation-5" top="5">
+    <v-container class="elevation-5" mt-5>
       <v-row class="d-flex align-baseline justify-space-between">
-        <v-col md="9">
-          <v-text class="ml-2">Data Barang Masuk</v-text>
+        <v-col md="4">
+          <span class="ml-3 mt-3">Data Barang</span>
         </v-col>
-        <v-col md="2" class="mr-3">
-          <v-btn @click="tambahBarang" color="primary">Tambah Barang Masuk</v-btn>
+        <v-col md="2" class="mr-14" mt-5>
+          <v-btn @click="tambahBarang" color="primary">Tambah Data Barang</v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -13,23 +13,29 @@
           <v-data-table
             :headers="headers"
             :items="barangList"
+            :server-items-length="totalData"
             :items-per-page="5"
+            :options.sync="options"
+            :loading="loading"
+            :footer-props="{
+              itemsPerPageOptions: [5, 10, 20, 30]
+            }"
           >
             <template v-slot:items="props">
               <td>{{ props.item.nama }}</td>
               <td>{{ props.item.kode }}</td>
               <td>{{ props.item.quantity }}</td>
               <td>{{ props.item.satuan }}</td>
-              <td>{{ props.item.harga }}</td>
+
             </template>
           </v-data-table>
         </v-col>
       </v-row>
   
       <!-- Modal untuk tambah barang -->
-      <v-dialog md="6" v-model="dialog" max-width="900px" transition="dialog-top-transition">
+      <v-dialog md="6" v-model="dialog" max-width="900px" height="500px" transition="dialog-top-transition">
         <v-card>
-          <v-subheader class="ml-3">Tambah Barang Masuk</v-subheader>
+          <span class="mt-8 ml-5">Tambah Barang Masuk</span>
           <v-card-text>
             <v-container>
       <v-row>
@@ -39,12 +45,13 @@
           sm="6"
           md="4"
         >
-        <v-text>
+        <span>
         Nama Barang
-      </v-text>
+      </span>
           <v-text-field
             label="Nama Barang"
             outlined
+            v-model="form.namaBarang"
             dense
             class="mt-2"
           ></v-text-field>
@@ -55,136 +62,137 @@
           sm="6"
           md="4"
         >
-        <v-text>
-        Kode Barang
-      </v-text>
-          <v-text-field
-            label="Kode Barang"
-            placeholder="Placeholder"
-            outlined
-            dense
-            disabled
-            class="mt-2"
-          ></v-text-field>
-        </v-col>
-        <v-col
-          cols="12"
-          sm="6"
-          md="4"
-        >
-        <v-text>
-        No. Grin
-      </v-text>
-          <v-text-field
-            label="No. Grin"
-            placeholder="Placeholder"
-            solo
-            dense
-            disabled
-            class="mt-2"
-          ></v-text-field>
-        </v-col>
-        <v-col
-          cols="12"
-          sm="6"
-          md="4"
-        >
-        <v-text>
+        <span>
         Satuan
-      </v-text>
-          <v-text-field
-            label="Satuan"
-            placeholder="Placeholder"
-            outlined
-            dense
-            class="mt-2"
-          ></v-text-field>
+      </span>
+          <v-select
+          v-model="form.satuan"
+          :items="unit"
+          label="Satuan"
+          ></v-select>
         </v-col>
+
         <v-col
           cols="12"
           sm="6"
           md="4"
         >
-        <v-text>
+        <span>
         Quantity
-      </v-text>
+      </span>
           <v-text-field
             label="quantity"
-            placeholder="Placeholder"
             outlined
             dense
-            class="mt-2"
-          ></v-text-field>
-        </v-col>
-        <v-col
-          cols="12"
-          sm="6"
-          md="4"
-        >
-        <v-text>
-        Harga Barang
-      </v-text>
-          <v-text-field
-            label="Harga Barang"
-            placeholder="Placeholder"
-            outlined
-            dense
+            v-model="form.qty"
             class="mt-2"
           ></v-text-field>
         </v-col>
       </v-row>
     </v-container>
           </v-card-text>
-          <v-card-actions class="ml-5 pb-3 align-items-center justify-content-center">
-            <v-btn color="error" @click="dialog = false" width="120px">Batal</v-btn>
-            <v-btn color="primary" @click="simpanBarang" width="120px">Simpan</v-btn>
+          <v-card-actions class="pb-5 align-items-center justify-content-center">
+            <v-btn color="error" @click="dialog = false; successDialog = false" width="120px" pb-3>Batal</v-btn>
+            <v-btn color="primary" @click="onSave"  width="120px" pb-3>Simpan</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
+        <!-- Modal dialog success -->
+  <v-dialog v-model="successDialog" max-width="400px">
+    <v-card max-width="400px" height="215px" align-center py-3>
+      <v-card-title class="headline" py-3>Berhasil Disimpan!</v-card-title>
+      <v-card-text class="mt-5">
+        <v-row justify="center" align="center">
+          <v-icon color="success" size="64" mt-3>mdi-check-circle-outline</v-icon>
+        </v-row>
+        <v-row justify="center" align="center" mt-5>
+          <span>Data barang berhasil disimpan</span>
+        </v-row>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" class="p-5" @click="successDialog = false">Tutup</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
     </v-container>
   </template>
   
   <script>
+import { watch } from 'vue';
+
 
   export default {
   layout: 'default',
    name: 'MasterBarangPage',
     data() {
       return {
-        barangList: [
-          { nama: 'SINGKONG', kode: 'kd-1221203-01', quantity: 100, satuan: 'KG', Harga: 100000 },
-          { nama: 'KERUPUK BAWANG MENTAH', kode: 'kd-1221203-02', quantity: 100, satuan: 'KG', Harga: 100000 },
-          { nama: 'TABUNG GAS 12 KG', kode: 'kd-1221203-03', quantity: 100, satuan: 'ITEM', Harga: 100000},
-          { nama: 'PLASTIK UK 7 X 12 CM', kode: 'kd-1221203-04', quantity: 100, satuan: 'PACK', Harga: 100000 },
-          { nama: 'PLASTIK UK 25 X 40 CM', kode: 'kd-1221203-05', quantity: 100, satuan: 'PACK', Harga: 100000 },
-          { nama: 'CABAI MERAH GILING', kode: 'kd-1221203-06', quantity: 100, satuan: 'KG', Harga: 100000 },
-          { nama: 'MINYAK GORENG', kode: 'kd-1221203-07', quantity: 100, satuan: 'DRUM', Harga: 100000 },
-          { nama: 'MASAKO RASA SAPI', kode: 'kd-1221203-08', quantity: 100, satuan: 'DUS', Harga: 100000 },
-          { nama: 'MSG AJINOMOTO', kode: 'kd-1221203-08', quantity: 100, satuan: 'DUS', Harga: 100000 },
-          { nama: 'LILIN', kode: 'kd-1221203-09', quantity: 100, satuan: 'PACK', Harga: 100000 },
-          { nama: 'TALI RAPIA', kode: 'kd-1221203-010', quantity: 100, satuan: 'ROLL', Harga: 100000 },
-          // Tambahkan data barang lainnya sesuai kebutuhan
-        ],
+        successDialog: false,
+        totalData: 0,
+        loading: false,
+        options: {},
+        barangList: [],
         headers: [
-          { text: 'Nama Barang', value: 'nama' },
-          { text: 'Kode Barang', value: 'kode' },
-          { text: 'Quantity', value: 'quantity' },
-          { text: 'Satuan', value: 'satuan' },
-          { text: 'Harga', value: 'harga' },
+          { text: '#', value: 'row', sortable: false },
+          { text: 'Nama Barang', value: 'namaBarang', sortable: false },
+          { text: 'Kode Barang', value: 'kodeBarang', sortable: false },
+          { text: 'Quantity', value: 'qty', sortable: false },
+          { text: 'Satuan', value: 'satuan', sortable: false },
      
-        ],
+        ],       
         dialog: false,
+        unit: ['KG', 'PCS', 'DUS', 'KRAT', 'ROLL'],
         form: {
-          nama: '',
-          kode: '',
-          jenis: '',
-          quantity: '',
-          satuan: ''
+          namaBarang: '',
+          satuan: '',
+          qty: ''
         },
-        jenisMuatan: ['Jenis 1', 'Jenis 2', 'Jenis 3'], // Ganti dengan pilihan jenis muatan yang sesuai
+        rules: {
+        namaBarang: [
+          (v) => !!v || 'nama barang is required',
+        ],
+        satuan: [
+          (v) => !!v || 'satuan is required',
+        ],
+        qty: [
+          (v) => !!v || 'quantity is required',
+        ]
+      }
       };
     },
     methods: {
+      fetchBarang() {
+        const { page, itemsPerPage } = this.options
+        this.loading = true
+
+        this.$axios.$get(`http://localhost:8000/api/index?page=${page}&limit=${itemsPerPage}`)
+        .then(response => {
+          this.loading = false
+          this.barangList = response.barangGet.docs
+          this.totalData = response.barangGet.totalDocs
+
+          let startItem = response.barangGet.pagingCounter
+          this.barangList.map(barang => barang.row = startItem++)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+  
+      },
+
+      onSave() {
+          this.$axios.$post(`http://localhost:8000/api/barang`, this.form)
+          .then(res => {
+            console.log('success tambah: ', res )
+            this.fetchBarang(); // Memuat ulang data barang setelah berhasil menyimpan
+            this.dialog = false; // Tutup dialog setelah menyimpan
+            this.successDialog = true;
+          })
+
+          .catch(error => {
+            console.log(error)
+          })
+        },
+
       tambahBarang() {
         this.dialog = true;
       },
@@ -194,7 +202,6 @@
           nama: this.form.nama,
           kode: this.form.kode,
           quantity: 0, // Ganti sesuai kebutuhan
-          harga: 0, // Ganti sesuai kebutuhan
           satuan: this.form.satuan
         });
   
@@ -207,8 +214,17 @@
           satuan: ''
         };
         this.dialog = false;
+        this.successDialog = true;
       },
     },
+    watch: {
+        options: {
+          handler() {
+            this.fetchBarang()
+          },
+          deep: true
+        }
+      },
   };
   </script>
   

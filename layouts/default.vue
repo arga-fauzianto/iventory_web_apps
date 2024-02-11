@@ -36,10 +36,12 @@
 
 <script>
 export default {
+  middleware: ['authenticated'],
   name: 'DefaultLayout',
   data() {
     return {
       drawer: false,
+      clipped: false,
       items: [
         {
           icon: 'mdi-apps',
@@ -48,7 +50,7 @@ export default {
         },
         {
           icon: 'mdi-chart-bubble',
-          title: 'Master Barang',
+          title: 'Data Barang',
           to: '/masterBarang',
         },
       ],

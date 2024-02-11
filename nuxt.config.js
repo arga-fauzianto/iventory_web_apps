@@ -24,7 +24,10 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/axios'],
+  plugins: [
+    {src: '~plugins/persistedState.js', mode: 'client'},
+    {src: '~plugins/axios.js', mode: 'client'}
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -50,7 +53,7 @@ export default {
   },
 
   proxy: {
-    '/api_inv/': {
+    '/api/': {
       target: "http://localhost:8000", // Ganti dengan URL target API Anda
       pathRewrite: { '^/api': '/api' },
       changeOrigin: true,
