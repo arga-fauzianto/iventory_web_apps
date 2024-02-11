@@ -53,6 +53,21 @@ export default {
           title: 'Data Barang',
           to: '/masterBarang',
         },
+        {
+          icon: 'mdi-chart-bubble',
+          title: 'Data Barang Masuk',
+          to: '/stockin',
+        },
+        {
+          icon: 'mdi-chart-bubble',
+          title: 'Data Barang Keluar',
+          to: '/stockout',
+        },
+        {
+          icon: 'mdi-logout',
+          title: 'Keluar',
+          to: '/logout',
+        },
       ],
       title: 'Iventory Web Apps',
     }

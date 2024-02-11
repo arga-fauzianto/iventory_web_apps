@@ -2,7 +2,7 @@
     <v-container class="elevation-5" mt-5>
       <v-row class="d-flex align-baseline justify-space-between">
         <v-col md="4">
-          <h3 class="ml-3 mt-3">Data Barang Masuk</h3>
+          <h3 class="ml-3 mt-3">Data Barang Keluar</h3>
         </v-col>
         <v-col md="2" class="mr-4" mt-5>
           <v-btn @click="tambahBarang" color="primary">Tambah Data</v-btn>
@@ -35,7 +35,7 @@
       <!-- Modal untuk tambah barang -->
       <v-dialog md="6" v-model="dialog" max-width="900px" height="500px" transition="dialog-top-transition">
         <v-card>
-          <span class="mt-8 ml-5">Tambah Barang Masuk</span>
+          <span class="mt-8 ml-5">Tambah Barang Keluar</span>
           <v-card-text>
             <v-container>
       <v-row>
