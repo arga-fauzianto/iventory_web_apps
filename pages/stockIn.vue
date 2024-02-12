@@ -164,13 +164,14 @@ import { watch } from 'vue';
         const { page, itemsPerPage } = this.options
         this.loading = true
 
-        this.$axios.$get(`http://localhost:8000/api/index?page=${page}&limit=${itemsPerPage}`)
+        this.$axios.$get(`http://localhost:8000/api/get_stock?page=${page}&limit=${itemsPerPage}`)
         .then(response => {
+          console.log('stockin', response)
           this.loading = false
-          this.barangList = response.barangGet.docs
-          this.totalData = response.barangGet.totalDocs
+          this.barangList = response.stockGet.docs
+          this.totalData = response.stockGet.totalDocs
 
-          let startItem = response.barangGet.pagingCounter
+          let startItem = response.stockGet.pagingCounter
           this.barangList.map(barang => barang.row = startItem++)
         })
         .catch(err => {
@@ -180,9 +181,9 @@ import { watch } from 'vue';
       },
 
       onSave() {
-          this.$axios.$post(`http://localhost:8000/api/barang`, this.form)
+          this.$axios.$post(`http://localhost:8000/api/stockin`, this.form)
           .then(res => {
-            console.log('success tambah: ', res )
+            console.log('success stockin: ', res )
             this.fetchBarang(); // Memuat ulang data barang setelah berhasil menyimpan
             this.dialog = false; // Tutup dialog setelah menyimpan
             this.successDialog = true;

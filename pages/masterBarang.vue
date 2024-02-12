@@ -21,11 +21,15 @@
               itemsPerPageOptions: [5, 10, 20, 30]
             }"
           >
-            <template v-slot:items="props">
-              <td>{{ props.item.nama }}</td>
-              <td>{{ props.item.kode }}</td>
-              <td>{{ props.item.quantity }}</td>
-              <td>{{ props.item.satuan }}</td>
+            <template v-slot:item.actions="{item}">
+
+              <v-btn small icon>
+              <v-icon small>mdi-pencil</v-icon>
+            </v-btn>
+
+            <v-btn small icon>
+              <v-icon small>mdi-delete</v-icon>
+            </v-btn>
 
             </template>
           </v-data-table>
@@ -137,6 +141,7 @@ import { watch } from 'vue';
           { text: 'Kode Barang', value: 'kodeBarang', sortable: false },
           { text: 'Quantity', value: 'qty', sortable: false },
           { text: 'Satuan', value: 'satuan', sortable: false },
+          { text: '', value: 'actions', sortable: false},
      
         ],       
         dialog: false,
